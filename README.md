@@ -2,6 +2,8 @@
 
 A modern healthcare management web application built with **HTML, CSS, and JavaScript**.
 
+( **Not RESPONSIVE** )     Only Desktop 
+
 ## 🌐 Live Demo
 
 (https://tech-care-rewon.netlify.app/)
