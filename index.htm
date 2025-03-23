@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TECH CARE</title>
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="loader.css" />
+    <link rel="shortcut icon" href="./assets/HeartBPM.svg" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="./assets/TestLogo.svg" alt="logo" />
+            </div>
+            <div>
+                <menu class="menu">
+                    <li>
+                        <img src="./assets/home_FILL0_wght300_GRAD0_opsz24.svg" alt="overview">
+                        <p>Overview</p>
+                    </li>
+                    <li class="menu-patients">
+                        <img src="./assets/group_FILL0_wght300_GRAD0_opsz24.svg" alt="overview">
+                        <p>Patients</p>
+                    </li>
+                    <li>
+                        <img src="./assets/calendar_today_FILL0_wght300_GRAD0_opsz24.svg" alt="overview">
+                        <p>Schedule</p>
+                    </li>
+                    <li>
+                        <img src="./assets/chat_bubble_FILL0_wght300_GRAD0_opsz24.svg" alt="overview">
+                        <p>Message</p>
+                    </li>
+                    <li>
+                        <img src="./assets/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="overview">
+                        <p>Transactions</p>
+                    </li>
+                </menu>
+            </div>
+            <div class="profile">
+                <div>
+                    <img src="./assets/senior-woman-doctor-and-portrait-smile-for-health-2023-11-27-05-18-16-utc.png"
+                        alt="">
+                    <div>
+                        <h4>Dr. Jose Simons</h4>
+                        <p>General Practitioner</p>
+                    </div>
+                </div>
+                <div class="settings">
+                    <img src="./assets/settings_FILL0_wght300_GRAD0_opsz24.svg" alt="">
+                    <img src="./assets/more_vert_FILL0_wght300_GRAD0_opsz24.svg" alt="">
+                </div>
+            </div>
+        </header>
+        <main>
+
+            <!-- Patient List -->
+
+            <div class="patients" style="grid-area: patients;">
+                <div class="head">
+                    <h2>Patients</h2>
+                    <button><img src="./assets/search_FILL0_wght300_GRAD0_opsz24.svg" alt=""></button>
+                </div>
+                <ul></ul>
+            </div>
+
+            <!-- Diagnosis History -->
+
+            <div class="diagnosis-history" style="grid-area: diagnosis-history;">
+                <h2>Diagnosis History</h2>
+                <div class="blood-pressure">
+                    <div class="header">
+                        <h4 style="font-weight: bold; font-size: 20px;">Blood Pressure</h4>
+                        <select name="" id="last-months" style="border: none; margin-right: 20px;"></select>
+                    </div>
+                    <div class="right-side">
+                        <div class="right">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div class="icon"></div>
+                                <h6>Systolic</h6>
+                            </div>
+                            <div>
+                                <p id="systolic-value"></p>
+                            </div>
+                            <div style="font-size: small;" id="systolic-levels"></div>
+                        </div>
+                        <hr />
+                        <div class="right">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div class="icon" style="background: #8C6FE6;"></div>
+                                <h6>Diastolic</h6>
+                            </div>
+                            <div>
+                                <p id="diastolic-value"></p>
+                            </div>
+                            <div style="font-size: small;" id="diastolic-levels"></div>
+                        </div>
+                    </div>
+                    <canvas id="myChart" style="width:100%;max-width:400px"></canvas>
+                </div>
+                <div class="bottom-side">
+                    <div class="component" style="background: #E0F3FA; padding: 10px;">
+                        <img src="./assets/respiratory rate.svg" alt="">
+                        <h4>Respiratory Rate</h4>
+                        <p id="respiratory-value"></p>
+                        <div style="font-size: small;" id="respiratory-levels"></div>
+                    </div>
+                    <div class="component" style="background: #FFE6E9; padding: 10px;">
+                        <img src="./assets/temperature.svg" alt="">
+                        <h4>Temperature</h4>
+                        <p id="temperature-value"></p>
+                        <div style="font-size: small;" id="temperature-levels"></div>
+                    </div>
+                    <div class="component" style="background: #FFE6F1; padding: 10px;">
+                        <img src="./assets/HeartBPM.svg" alt="">
+                        <h4>Heart Rate</h4>
+                        <p id="heart-rate-value"></p>
+                        <div style="font-size: small;" id="heart-rate-levels"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="info" style="grid-area: info;"></div>
+            <div class="diagnostic-list" style="grid-area: diagnostic-list;">
+                <h2>Diagnostic List</h2>
+                <table>
+                    <tr>
+                        <th>Problem/Diagnosis</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="lab-results" style="grid-area: lab-results;">
+                <h2>Lab Results</h2>
+                <ul class="lab-results-list"></ul>
+            </div>
+        </main>
+    </div>
+
+
+
+    <script>
+        const base64Credentials = btoa("coalition:skills-test");
+        let patients = []
+        const xValues = [];
+        const patientList = document.querySelector('.patients>ul')
+        const body = document.querySelector('body')
+        const infoPage = document.querySelector('.info')
+        const bloodPressure = document.querySelector('.diagnosis-history')
+        const diagnosticList = document.querySelector('.diagnostic-list table')
+        const labResults = document.querySelector('.lab-results-list')
+        const systolicValue = document.getElementById('systolic-value')
+        const systolicLevels = document.getElementById('systolic-levels')
+        const diastolicValue = document.getElementById('diastolic-value')
+        const diastolicLevels = document.getElementById('diastolic-levels')
+        const respiratoryValue = document.getElementById('respiratory-value')
+        const respiratoryLevels = document.getElementById('respiratory-levels')
+        const temperatureValue = document.getElementById('temperature-value')
+        const temperatureLevels = document.getElementById('temperature-levels')
+        const heartRateValue = document.getElementById('heart-rate-value')
+        const heartRateLevels = document.getElementById('heart-rate-levels')
+        const lastMonthsSelect = document.getElementById('last-months')
+        fetch("https://fedskillstest.coalitiontechnologies.workers.dev", {
+            method: "GET",
+            headers: {
+                Authorization: `Basic ${base64Credentials}`,
+                "Content-Type": "application/json"
+            }
+        }
+        ).then(response => response.json())
+            .then(data => {
+                patients = data
+                showPatientList(patients)
+                showInfo(0)
+                if (!data) {
+                    body.innerHTML = "<div class='loader-container'><span class='loader'></span></div>"
+                }
+            })
+
+        function showPatientList(arg) {
+            arg.forEach((patient, index) => {
+                patientList.innerHTML += `
+                    <li onclick="showInfo(${index})" class="patients-item">
+                        <img class="profile_picture" src="${patient.profile_picture}" alt="profile_picture">
+                        <div class="patient-name">
+                            <h4>${patient.name}</h4>
+                            <p>${patient.gender}, ${patient.age}</p>
+                        </div>
+                        <div>
+                            <img src="./assets/more_horiz_FILL0_wght300_GRAD0_opsz24.svg" alt="">
+                        </div>
+                    </li>
+            `
+
+            })
+
+        }
+
+        function showInfo(index) {
+            let patient = patients[index]
+            let xVal = []
+            let systolicData = []
+            let diastolicData = []
+            // console.log(patient.diagnosis_history)
+            for(let i = patient.diagnosis_history.length-1; i>=0; i--){
+                // console.log(patient.diagnosis_history[i].blood_pressure.diastolic.value)
+                // console.log(patient.diagnosis_history[i].blood_pressure.systolic.value)
+                xVal.push(patient.diagnosis_history[i].month.slice(0,3)+","+patient.diagnosis_history[i].year)
+                systolicData.push(patient.diagnosis_history[i].blood_pressure.systolic.value)
+                diastolicData.push(patient.diagnosis_history[i].blood_pressure.diastolic.value)
+            }
+
+            lastMonthsSelect.innerHTML = `
+                            <option value="last6months">Last 6 months</option>
+                            <option value="last9months">Last 9 months</option>
+                            <option value="last1year">Last 1 year</option>
+                    `
+
+
+            const myChart =  new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: xVal,
+                datasets: [{
+                    data: systolicData,
+                    borderColor: "#8C6FE6",
+                    pointBackgroundColor: "#8C6FE6",
+                    fill: false,
+                    pointBorderColor: "#8C6FE6",
+                    pointRadius: 5
+                },
+                {
+                    data: diastolicData,
+                    borderColor: "#E66FD2",
+                    pointBackgroundColor: "#E66FD2",
+                    fill: false,
+                    pointBorderColor: "#E66FD2",
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: false
+                },
+                scales: {
+                    y: {
+                        min: 60,
+                        max: 180,
+                        ticks: {
+                            stepSize: 20
+                        }
+                    }
+                }
+
+            }
+        });
+
+
+
+            infoPage.innerHTML = `
+                        <img class="profile_picture" src="${patient.profile_picture}" alt="">
+                        <h2>${patient.name}</h2>
+                        <ul>
+                            <li>
+                                <img src="./assets/BirthIcon.svg" alt="">
+                                <div>
+                                    <h4>Date Of Birth</h4>
+                                    <p>${patient.date_of_birth}</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="./assets/FemaleIcon.svg" alt="">
+                                <div>
+                                    <h4>Gender</h4>
+                                    <p>${patient.gender}</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="./assets/PhoneIcon.svg" alt="">
+                                <div>
+                                    <h4>Contact Info</h4>
+                                    <p>${patient.phone_number}</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="./assets/PhoneIcon.svg" alt="">
+                                <div>
+                                    <h4>Emergency Contacts</h4>
+                                    <p>${patient.phone_number}</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="./assets/InsuranceIcon.svg" alt="">
+                                <div>
+                                    <h4>Insurance Provider</h4>
+                                    <p>${patient.insurance_type}</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <button>Show All Information</button>
+                        `
+          
+                systolicValue.innerHTML = patient.diagnosis_history[0].blood_pressure.systolic.value
+                systolicLevels.innerHTML = patient.diagnosis_history[0].blood_pressure.systolic.levels
+                diastolicValue.innerHTML = patient.diagnosis_history[0].blood_pressure.diastolic.value
+                diastolicLevels.innerHTML = patient.diagnosis_history[0].blood_pressure.diastolic.levels
+                respiratoryValue.innerHTML = patient.diagnosis_history[0].respiratory_rate.value
+                respiratoryLevels.innerHTML = patient.diagnosis_history[0].respiratory_rate.levels
+                temperatureValue.innerHTML = patient.diagnosis_history[0].temperature.value
+                temperatureLevels.innerHTML = patient.diagnosis_history[0].temperature.levels
+                heartRateValue.innerHTML = patient.diagnosis_history[0].heart_rate.value
+                heartRateLevels.innerHTML = patient.diagnosis_history[0].heart_rate.levels
+
+            diagnosticList.innerHTML = `
+                                    <tr>
+                                        <th>Problem/Diagnosis</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                    </tr>
+                        `
+
+            patients[index].diagnostic_list.forEach((e) => {
+
+                diagnosticList.innerHTML += `
+                                <tr style="background: white; border-bottom: 1px solid #eee">
+                                    <td>${e.name}</td>
+                                    <td>${e.description}</td>
+                                    <td>${e.status}</td>
+                                </tr>
+                                `
+            })
+
+
+            labResults.innerHTML = ""
+
+            patients[index].lab_results.forEach((e) => {
+                labResults.innerHTML += `
+                                    <li>
+                                        <p>${e}</p>
+                                        <button><img src="./assets/download_FILL0_wght300_GRAD0_opsz24 (1).svg" alt=""></button>
+                                    </li>
+                                `
+            })
+
+
+
+        }
+
+        
+        
+
+
+        
+    </script>
+</body>
+
+</html>
